@@ -76,6 +76,6 @@ group :test do
 end
 
 group :production do
-  gem "postgres"
+  gem "mysql"
   gem "unicorn"
 end
