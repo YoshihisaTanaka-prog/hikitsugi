@@ -77,5 +77,5 @@ end
 
 group :production do
   gem "postgres"
-  gem "unicon"
+  gem "unicorn"
 end
