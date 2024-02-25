@@ -1,0 +1,10 @@
+<h1><%= @main.student.name %>さん　<%= ["国語", "算数・数学", "理科", "社会", "英語"][@main.subject - 1] %>　授業データの編集</h1>
+
+<%= render "form", main: @main %>
+
+<br>
+
+<div>
+  <%= link_to "Show this main", @main %> |
+  <%= link_to "生徒詳細ページへ戻る", @main.student %>
+</div>

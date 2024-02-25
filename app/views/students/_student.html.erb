@@ -1,0 +1,67 @@
+<div id="<%= dom_id student %>" class="school-<%= student.school_id %> student">
+
+  <% if action_name == "index" %>
+    <div style="display: flex;">
+      <p style="padding-right: 2em; margin-block-end: 0px">
+        <strong>名前:</strong>
+        <%= student.name %>(<%= student.name_hurigana %>)
+      </p>
+
+      <p style=" margin-block-end: 0px">
+        <strong>学年:</strong>
+        <%= ["小学1年", "小学2年", "小学3年", "小学4年", "小学5年", "小学6年", "中学1年", "中学2年", "中学3年", "高校1年", "高校2年", "高校3年", "既卒"][student.grade - 1] %>
+      </p>
+    </div>
+  <% else %>
+    <div style="display: flex;">
+      <div style="padding-right: 2em; max-width: 50vw">
+        <p>
+          <strong>名前:</strong>
+          <%= student.name %>(<%= student.name_hurigana %>)
+        </p>
+
+        <p>
+          <strong>学年:</strong>
+          <%= ["小学1年", "小学2年", "小学3年", "小学4年", "小学5年", "小学6年", "中学1年", "中学2年", "中学3年", "高校1年", "高校2年", "高校3年", "既卒"][student.grade - 1] %>
+        </p>
+
+        <p>
+          <strong>目標にしていること:</strong>
+          <%= student.goal %>
+        </p>
+
+        <p>
+          <strong>学力:</strong>
+          <%= ["かなり前の内容から復習が必要","復習が必要","学校の授業に合わせたらいい","少し予習も取り入れている"][student.level - 1] %>
+        </p>
+
+        <p>
+          <strong>授業態度:</strong>
+          <%= ["全然集中しない","やる気にムラがある","いつも集中している"][student.attitude - 1] %>
+        </p>
+
+        <% unless student.attitude == 3 %>
+          <p>
+            <strong>やる気がないときは:</strong>
+            <%= student.how_to_focus %>
+          </p>
+        <% end %>
+
+        <p>
+          <strong>性格:</strong>
+          <%= student.personality %>
+        </p>
+      </div>
+
+      <div>
+        <strong>補足情報</strong>
+        <% unless student.supplement.blank? %>
+          <div style="padding: 0 2em;">
+            <%= simple_format(student.supplement) %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+  <% end %>
+</div>

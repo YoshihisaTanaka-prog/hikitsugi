@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @prefecture %>
+
+<div>
+  <%= link_to "Edit this prefecture", edit_prefecture_path(@prefecture) %> |
+  <%= link_to "Back to prefectures", prefectures_path %>
+
+  <%= button_to "Destroy this prefecture", @prefecture, method: :delete, form: {data: {turbo_confirm: "本当に削除してもよろしいですか？"}} %>
+</div>

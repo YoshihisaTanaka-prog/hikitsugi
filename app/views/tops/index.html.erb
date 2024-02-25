@@ -1,0 +1,70 @@
+<h1>TRY 引継ぎシステム</h1>
+
+<% if teacher_signed_in? %>
+  <% if !(current_teacher.is_authenticated) %>
+    <div>
+      承認されていないユーザです。<br>
+      <div id="teachers">
+        <% Teacher.where(school_id: current_teacher.school_id).where(is_authenticated: true).each do |teacher| %>
+          <input type="radio" name="teacher" id="teacher-<%= teacher.id %>" value=<%= teacher.id %>>
+          <label for="teacher-<%= teacher.id %>"><%= teacher.name %>先生</label><br>
+        <% end %>
+        <input type="hidden" id="new_teacher_id" value="<%= current_teacher.id %>">
+      </div>
+      知っている先生がいない場合はこちら<input type="text" id="name" placeholder="教師名">(<input type="text" id="name_kana" placeholder="かな">)先生<button onclick="searchTeacher()">検索</button>
+      <button id="approve-btn" onclick="askApprove()">に承認してもらう。</button>
+    </div>
+  <% end %>
+  <ul>
+    <li><%= link_to '生徒一覧', students_path %></li>
+    <li><%= link_to '校舎一覧', schools_path %></li>
+    <% if current_teacher.email == ENV['ADMIN_EMAIL'] %>
+      <li><%= link_to '地方の編集', aria_path %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <ul>
+    <li><%= link_to 'Sign In', new_teacher_session_path %></li>
+    <li><%= link_to 'Sign Up', new_teacher_registration_path %></li>
+  </ul>
+<% end %>
+
+<script>
+
+  $.fn.autoKana('#name', '#name_kana');
+
+  function searchTeacher(){
+    const name = $('#name').val();
+    const name_kana = $('#name_kana').val();
+    if(name == "" || name_kana == ""){
+      alert("教師名を入力してください。");
+    } else{
+      setCSRFtoken();
+      $.post("/search_teacher", {name: name, name_kana: name_kana}, function(data){
+        console.log(data);
+        $("#teachers").html("");
+        for(let teacher of data){
+          $("#teachers").append("<input type='radio' name='teacher' id='teacher-" + teacher.id + "' value='" + teacher.id + "'><label for='teacher-" + teacher.id + "'>" + teacher.name + "先生(" + teacher.school + ")</label><br>");
+        }
+      });
+    }
+  }
+
+  function askApprove(){
+    const old_teacher_id = $('input[name="teacher"]:checked').val();
+    const new_teacher_id = $('#new_teacher_id').val();
+    if(old_teacher_id){
+      setCSRFtoken();
+      $("#approve-btn").css("display", "none");
+      $.post("/ask_approve", {old_teacher_id: old_teacher_id, new_teacher_id: new_teacher_id}, function(data){
+        $("#approve-btn").css("display", "inline-block");
+        if(data == "error"){
+          alert("承認メールを送信できませんでした。");
+        }
+      }, "text");
+    }else{
+      alert("承認してもらう教師を選択してください。");
+    }
+  }
+
+</script>

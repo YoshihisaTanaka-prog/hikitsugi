@@ -1,0 +1,23 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @student %>
+
+<div>
+  <%= link_to "Edit this student", edit_student_path(@student) %> |
+  <%= link_to "Back to students", students_path %>
+
+  <%= button_to "Destroy this student", @student, method: :delete, form: {data: {turbo_confirm: "本当に削除してもよろしいですか？"}} %>
+</div>
+
+
+<p>
+  <%= link_to "授業データを追加", new_main_path %>
+</p>
+<h3>授業データ一覧</h3>
+<ul>
+  <% @student.mains.each do |main| %>
+    <%= link_to main do %>
+      <li><%= main.updated_at %>(<%= ["国語", "算数・数学", "理科", "社会", "英語"][main.subject - 1] %>)</li>
+    <% end %>
+  <% end %>
+</ul>

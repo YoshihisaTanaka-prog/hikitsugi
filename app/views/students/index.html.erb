@@ -1,0 +1,91 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Students</h1>
+
+<input type="hidden" id="teacher-school-id" value=<%= current_teacher.school_id %>>
+
+<%= form_with do |form| %>
+  <div>
+    <%= form.label :school_id, "校舎", style: "display: block" %>
+    <div style="display: flex;">
+      <div>
+        <% Arium.all.each do |category| %>
+          <%= form.radio_button :area, category.id, class: "area", checked: (category.id == current_teacher.area) %>
+          <%= form.label "area_#{category.id}", category.name %><br>
+        <% end %>
+        <input type="hidden" id="area-id" value=<%= current_teacher.area %>>
+      </div>
+
+      <div>
+        <% Prefecture.all.each do |category| %>
+          <%= form.radio_button :prefecture, category.id, class: "#{category.area_id} prefecture", checked: (category.id == current_teacher.prefecture) %>
+          <%= form.label "prefecture_id_#{category.id}", category.name, class: "#{category.area_id} prefecture" %><br class="<%= category.area_id %> prefecture">
+        <% end %>
+        <input type="hidden" id="prefecture-id" value=<%= current_teacher.prefecture %>>
+      </div>
+
+      <div>
+        <% School.all.order(:school_id).each do |category| %>
+          <%= form.radio_button :school, category.id, class: "pref-#{category.prefecture_id} school", checked: (category.id == current_teacher.school_id) %>
+          <%= form.label "school_id_#{category.id}", "#{category.name}(#{category.school_id})", class: "pref-#{category.prefecture_id} school" %><br class="pref-<%= category.prefecture_id %> school">
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<div id="students">
+  <% @students.each do |student| %>
+    <%= render student %>
+    <p class="school-<%= student.school_id %> student" style="margin-block-start: 0px">
+      <%= link_to "Show this student", student %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New student", new_student_path %>
+
+<script>
+
+  var currentArea = 0;
+  var currentPrefecture = 0;
+  var currentSchool = 0;
+
+  $(".student").css("display","none");
+  $(".school-" + $("#teacher-school-id").val()).css("display","block");
+
+  $(".area").on("click", function(){
+    const selectedValue = $('input[name="area"]:checked').val();
+    if(currentArea != selectedValue){
+      currentArea = selectedValue;
+      currentPrefecture = 0
+      currentSchool = 0;
+      $(".prefecture").css("display", "none").prop('checked', false);
+      $("." + selectedValue).css("display", "inline-block");
+      $(".school").css("display", "none").prop('checked', false);
+      $(".student").css("display", "none");
+    }
+  });
+
+  $(".prefecture").css("display", "none").on("click", function(){
+    const selectedValue = $('input[name="prefecture"]:checked').val();
+    if(currentPrefecture != selectedValue){
+      currentPrefecture = selectedValue;
+      $(".school").css("display", "none").prop('checked', false);
+      $(".pref-" + selectedValue).css("display", "inline-block");
+      $(".student").css("display", "none");
+    }
+  });
+  $("." + $("#area-id").val() ).css("display", "inline-block");
+
+  $(".school").css("display", "none").on("click", function(){
+    const selectedValue = $('input[name="school"]:checked').val();
+    if(currentSchool != selectedValue){
+      currentSchool = selectedValue;
+      $(".student").css("display", "none");
+      $(".school-" + selectedValue).css("display", "block");
+    }
+  });
+  $(".pref-" + $("#prefecture-id").val() ).css("display", "inline-block");
+
+</script>

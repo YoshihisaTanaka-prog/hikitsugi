@@ -1,0 +1,74 @@
+<p class="no-print" style="color: green"><%= notice %></p>
+
+<h1><%= @main.student.name %>さん（<%= ["国語", "算数・数学", "理科", "社会", "英語"][@main.subject - 1] %>）<span class="no-print">授業データ</span><span class="only-print-inline">を担当される先生へ</span></h1>
+  
+<hr>
+
+<div class="no-print">
+  <%= link_to "授業データの編集", edit_main_path(@main) %> |
+  <%= link_to "生徒データの編集", edit_student_path(@main.student) %> |
+  <%= link_to "生徒詳細ページへ戻る", @main.student %>
+
+  <%= button_to "授業データの削除", @main, method: :delete, form: {data: {turbo_confirm: "本当に削除してもよろしいですか？"}} %>
+
+  内容を確認して最下部の「印刷」ボタンをクリックすると印刷できます。
+</div>
+<div>
+  <h2 style="margin-block-start: 0em; margin-block-end: 0em;">生徒情報</h2>
+  <div style="padding: 0 2em;">
+    <%= render "students/student", student: @main.student %>
+  </div>
+  
+  <hr>
+  
+  <h2 style="margin-block-start: 0em; margin-block-end: 0em;">授業情報</h2>
+  <div style="display: flex;">
+    <div style="padding-right: 2em; max-width: 50vw;">
+      <h3>どこまでやったか</h3>
+      <ul>
+        <% @main.textbooks_hash.each do |key, value| %>
+          <% unless value[:finished_place].blank? %>
+            <li><b><%= value[:name] %>：</b><%= value[:finished_place] %></li>
+          <% end %>
+        <% end %>
+      </ul>
+
+      <h3>授業の流れ</h3>
+      <ol>
+        <% @main.flows.each do |flow| %>
+          <% unless flow.content.blank? %>
+            <li><%= flow.content %></li>
+          <% end %>
+        <% end %>
+      </ol>
+
+      <h3>宿題について</h3>
+      
+      <% if @main.is_giving_answer %>
+        <strong>※　宿題を自分で丸付けしてもらっています。</strong>
+      <% else %>
+        <strong>※　宿題の答えは丸付けをしたあと渡しています。</strong>
+      <% end %>
+      
+      <br><br><strong style="padding: 0 1em;">量</strong>
+      <ul>
+        <% @main.homeworks_hash.each do |key, value| %>
+          <% unless value[:amount].blank? %>
+            <li><b><%= value[:name] %>：</b><%= value[:amount] %>/週</li>
+          <% end %>
+        <% end %>
+      </ul>
+    </div>
+
+    <div>
+      <h3>授業の補足</h3>
+      <% unless @main.supplement.blank? %>
+        <div style="padding: 0 2em;">
+          <%= simple_format(@main.supplement) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <p style="width: 95vw; text-align: right;">以上です。引継ぎお願いします。　<b><%= current_teacher.name %><b></p>
+  <p class="no-print"><button onclick="window.print();">印刷</button></p>
+</div>

@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @testbook %>
+
+<div>
+  <%= link_to "Edit this testbook", edit_testbook_path(@testbook) %> |
+  <%= link_to "Back to testbooks", testbooks_path %>
+
+  <%= button_to "Destroy this testbook", @testbook, method: :delete, form: {data: {turbo_confirm: "本当に削除してもよろしいですか？"}} %>
+</div>

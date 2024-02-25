@@ -1,0 +1,10 @@
+<h1>教師一覧</h1>
+<ul>
+  <% @teachers.each do |teacher| %>
+    <% if teacher.school %>
+      <li><%= link_to "#{teacher.name} #{teacher.school.name}", "/teachers/#{teacher.id}" %></li>
+    <% else %>
+      <li><%= link_to teacher.name, "/teachers/#{teacher.id}" %></li>
+    <% end %>
+  <% end %>
+</ul>

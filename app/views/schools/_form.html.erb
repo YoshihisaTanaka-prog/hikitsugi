@@ -1,0 +1,57 @@
+<%= form_with(model: school) do |form| %>
+  <% if school.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(school.errors.count, "error") %> prohibited this school from being saved:</h2>
+
+      <ul>
+        <% school.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :school_id, "School ID", style: "display: block" %>
+    <%= form.number_field :school_id %>
+  </div>
+
+  <div style="display: flex;">
+    <div>
+      <% Arium.all.each do |category| %>
+        <%= form.radio_button "area", category.id, class: "area" %>
+        <%= form.label "area_#{category.id}", category.name %><br>
+      <% end %>
+    </div>
+
+    <div>
+      <% Prefecture.all.each do |category| %>
+        <%= form.radio_button :prefecture_id, category.id, class: "#{category.area_id} prefecture" %>
+        <%= form.label "prefecture_id_#{category.id}", category.name, class: "#{category.area_id} prefecture" %><br class="<%= category.area_id %> prefecture">
+      <% end %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
+
+<script>
+  var currentArea = 0;
+  $(".area").on("click", function(){
+    const selectedValue = $('input[name="school[area]"]:checked').val();
+    if(currentArea != selectedValue){
+      currentArea = selectedValue;
+      $(".prefecture").css("display", "none").prop('checked', false);
+      $("." + selectedValue).css("display", "inline-block");
+    }
+  });
+  
+  $(".prefecture").css("display", "none");
+</script>

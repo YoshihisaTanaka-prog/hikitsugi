@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Prefectures</h1>
+
+<div id="prefectures">
+  <% @prefectures.each do |prefecture| %>
+    <%= render prefecture %>
+    <p>
+      <%= link_to "Show this prefecture", prefecture %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New prefecture", new_prefecture_path %>

@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Aria</h1>
+
+<%= link_to '都道府県の編集', prefectures_path %>
+
+<div id="aria">
+  <% @aria.each do |arium| %>
+    <%= render arium %>
+    <p>
+      <%= link_to "Show this arium", arium %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New arium", new_arium_path %>

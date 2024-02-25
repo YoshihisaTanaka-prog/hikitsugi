@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @arium %>
+
+<div>
+  <%= link_to "Edit this arium", edit_arium_path(@arium) %> |
+  <%= link_to "Back to aria", aria_path %>
+
+  <%= button_to "Destroy this arium", @arium, method: :delete, form: {data: {turbo_confirm: "本当に削除してもよろしいですか？"}} %>
+</div>

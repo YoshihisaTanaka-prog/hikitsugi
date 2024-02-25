@@ -1,0 +1,27 @@
+<%= form_with(model: testbook) do |form| %>
+  <% if testbook.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(testbook.errors.count, "error") %> prohibited this testbook from being saved:</h2>
+
+      <ul>
+        <% testbook.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :name_kana, style: "display: block" %>
+    <%= form.text_field :name_kana %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

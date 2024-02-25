@@ -1,0 +1,15 @@
+<h1><%= @teacher.name %></h1>
+<h2><%= @teacher.name_kana %></h2>
+<h3><%= @teacher.school.name if @teacher.school %></h3>
+
+<% if @teacher.id == current_teacher.id %>
+  <%= link_to '情報を編集する', edit_teacher_registration_path %>
+<% elsif @teacher.is_authenticated &&  %>
+  <%= form_with(model: @teacher) do |form| %>
+    <%= form.submit "キックする" %>
+  <% end %>
+<% else  %>
+  <%= form_with(model: @teacher) do |form| %>
+    <%= form.submit "承認する" %>
+  <% end %>
+<% end %>

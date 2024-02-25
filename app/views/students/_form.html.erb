@@ -1,0 +1,153 @@
+<%= form_with(model: student) do |form| %>
+  <% if student.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(student.errors.count, "error") %> prohibited this student from being saved:</h2>
+
+      <ul>
+        <% student.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, "生徒の名前（例：虎居太郎[スペースは使わないこと]）", style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :name_hurigana, "ふりがな", style: "display: block" %>
+    <%= form.text_field :name_hurigana %>
+  </div>
+
+  <div>
+    <%= form.label :grade, "学年", style: "display: block" %>
+    <%= form.select :grade, grades_options %>
+  </div>
+
+  <div>
+    <%= form.label :goal, "目標にしていること", style: "display: block" %>
+    <%= form.text_field :goal %>
+  </div>
+
+  <div>
+    <%= form.label :level, "学力", style: "display: block" %>
+    <% levels_options.each do |label, value| %>
+      <%= form.radio_button :level, value, id: "student_level_#{value}" %>
+      <%= form.label "level_#{value}", label %>　
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :attitude, "授業態度", style: "display: block" %>
+    <% attitudes_options.each do |label, value| %>
+      <%= form.radio_button :attitude, value, id: "student_attitude_#{value}", class: "attitude" %>
+      <%= form.label "attitude_#{value}", label %>　
+    <% end %>
+  </div>
+
+  <div id="how-to-focus" style="display: none">
+    <%= form.label :how_to_focus, "やる気がないときは？", style: "display: block" %>
+    <%= form.text_field :how_to_focus %>
+  </div>
+
+  <div>
+    <%= form.label :personality, "その他の性格", style: "display: block" %>
+    <%= form.text_field :personality %>
+  </div>
+
+  <diV>
+    <%= form.label :school_id, "校舎", style: "display: block" %>
+    <div style="display: flex;">
+      <div>
+        <% Arium.all.each do |category| %>
+          <%= form.radio_button :area, category.id, class: "area" %>
+          <%= form.label "area_#{category.id}", category.name %><br>
+        <% end %>
+        <input type="hidden" id="area-id" value=<%= current_teacher.area %>>
+      </div>
+
+      <div>
+        <% Prefecture.all.each do |category| %>
+          <%= form.radio_button :prefecture, category.id, class: "#{category.area_id} prefecture" %>
+          <%= form.label "prefecture_id_#{category.id}", category.name, class: "#{category.area_id} prefecture" %><br class="<%= category.area_id %> prefecture">
+        <% end %>
+        <input type="hidden" id="prefecture-id" value=<%= current_teacher.prefecture %>>
+      </div>
+
+      <div>
+        <% School.all.order(:school_id).each do |category| %>
+          <%= form.radio_button :school_id, category.id, class: "pref-#{category.prefecture_id} school" %>
+          <%= form.label "school_id_#{category.id}", "#{category.name}(#{category.school_id})", class: "pref-#{category.prefecture_id} school" %><br class="pref-<%= category.prefecture_id %> school">
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <h2>生徒の補足</h2>
+    <%= form.text_area :supplement %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
+
+
+<script>
+  $.fn.autoKana('#student_name', '#student_name_hurigana');
+
+  var idArray = ["#student_name", "#student_goal", "#student_personality", "#student_supplement"];
+
+  for (let i = 0; i<idArray.length-1; i++){
+    const currentId = idArray[i];
+    const nextId = idArray[i+1];
+    $(currentId).keypress(function(event) {
+      if (event.keyCode === 13) {
+        event.preventDefault();
+        $(nextId).focus();
+      }
+    });
+  }
+  
+  var currentArea = 0;
+  var currentPrefecture = 0;
+
+  $(".area").on("click", function(){
+    const selectedValue = $('input[name="student[area]"]:checked').val();
+    if(currentArea != selectedValue){
+      currentArea = selectedValue;
+      currentPrefecture = 0;
+      $(".prefecture").css("display", "none").prop('checked', false);
+      $("." + selectedValue).css("display", "inline-block");
+      $(".school").css("display", "none").prop('checked', false);
+    }
+  });
+
+  $(".prefecture").css("display", "none").on("click", function(){
+    const selectedValue = $('input[name="student[prefecture]"]:checked').val();
+    if(currentPrefecture != selectedValue){
+      currentPrefecture = selectedValue;
+      $(".school").css("display", "none").prop('checked', false);
+      $(".pref-" + selectedValue).css("display", "inline-block");
+    }
+  });
+  $("." + $("#area-id").val() ).css("display", "inline-block");
+
+  $(".school").css("display", "none");
+  $(".pref-" + $("#prefecture-id").val() ).css("display", "inline-block");
+
+  $(".attitude").on("click", function(){
+    const selectedValue = $('input[name="student[attitude]"]:checked').val();
+    if(selectedValue){
+      if(selectedValue == 3){
+        $("#how-to-focus").css("display", "none");
+      } else{
+        $("#how-to-focus").css("display", "block");
+      }
+    }
+  });
+
+</script>

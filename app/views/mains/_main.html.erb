@@ -1,0 +1,12 @@
+<div id="<%= dom_id main %>">
+  <p>
+    <strong>Subject:</strong>
+    <%= ["国語", "算数・数学", "理科", "社会", "英語"][main.subject - 1] %>
+  </p>
+
+  <p>
+    <strong>Student:</strong>
+    <%= main.student.name %>
+  </p>
+
+</div>

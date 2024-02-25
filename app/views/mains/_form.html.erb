@@ -1,0 +1,242 @@
+<%= form_with(model: main) do |form| %>
+  <% if main.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(main.errors.count, "error") %> prohibited this main from being saved:</h2>
+
+      <ul>
+        <% main.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <%= form.hidden_field :student_id %>
+
+  <div>
+    <%= form.label :subject, "教科", style: "display: block" %>
+    <%= form.select :subject, subjects_options  %>
+  </div>
+
+  <div style="display: flex;">
+    <div style="padding-right: 2em;" id="textbooks">
+      <h2>使用している教材</h2>
+      <% Testbook.all.order(:name_kana).each do |textbook| %>
+        <div class="<%= textbook.name_kana %> textbook">
+          <% if main.textbook_ids.include?(textbook.id) || main.homework_ids.include?(textbook.id) %>
+            <input type="checkbox" name="textbook[]" id="textbook_<%= textbook.id %>" value="<%= textbook.id %>" onclick="setTextbookAndHomeworkForm()" checked>
+          <% else %>
+            <input type="checkbox" name="textbook[]" id="textbook_<%= textbook.id %>" value="<%= textbook.id %>" onclick="setTextbookAndHomeworkForm()">
+          <% end %>
+          <label for="textbook_<%= textbook.id %>" id="textbook-name-<%= textbook.id %>"><%= textbook.name %></label>
+        </div>
+      <% end %>
+    </div>
+    <div>
+      教材が見つからない場合はこちら<br>
+      <input type="text" id="text-name" placeholder="教材名" oninput="searchTextbook()"><input type="text" id="text-name-kana" placeholder="ふりがな" oninput="searchTextbook()"><br>
+      <button type="button" onclick="addTextbook()">教材を追加</button>
+    </div>
+  </div>
+
+  <h2>どこまでやったか</h2>
+  <div id="finished_place">
+  </div>
+
+  <div id="flows">
+    <h2>授業の流れ</h2>
+    <% i = 0 %>
+    <%= form.fields_for :flows do |flow_form| %>
+      <% if i != 0 %>
+        <br>↓<br>
+      <% end %>
+      <%= flow_form.text_field :content, placeholder: "例題を解説" %>
+      <% i = i + 1 %>
+    <% end %>
+    <input type="hidden" id="flows-length" value="<%= i %>">
+  </div>
+  <button type="button" onclick="addFlow()">授業の流れを追加</button>
+
+  <div>
+    <h2>宿題の量</h2>
+    <div id="homeworks">
+    </div>
+    <p>
+      <% if main.is_giving_answer.nil? %>
+        <input type="radio" name="main[is_giving_answer]" id="main_is_giving_answer_f" value="0"><label for="main_is_giving_answer_f">宿題の答えは丸付けをしたあと渡す</label>
+        <input type="radio" name="main[is_giving_answer]" id="main_is_giving_answer_t" value="1"><label for="main_is_giving_answer_t">宿題を自分で丸付けしてもらう</label>
+      <% elsif main.is_giving_answer %>
+        <input type="radio" name="main[is_giving_answer]" id="main_is_giving_answer_f" value="0"><label for="main_is_giving_answer_f">宿題の答えは丸付けをしたあと渡す</label>
+        <input type="radio" name="main[is_giving_answer]" id="main_is_giving_answer_t" value="1" checked><label for="main_is_giving_answer_t">宿題を自分で丸付けしてもらう</label>
+      <% else %>
+        <input type="radio" name="main[is_giving_answer]" id="main_is_giving_answer_f" value="0" checked><label for="main_is_giving_answer_f">宿題の答えは丸付けをしたあと渡す</label>
+        <input type="radio" name="main[is_giving_answer]" id="main_is_giving_answer_t" value="1"><label for="main_is_giving_answer_t">宿題を自分で丸付けしてもらう</label>
+      <% end %>
+    </p>
+  </div>
+
+  <div>
+    <h2>授業の補足</h2>
+    <%= form.text_area :supplement %>
+  </div>
+
+  <div>
+    <%= form.submit "授業データの作成・更新" %>
+  </div>
+<% end %>
+
+<script>
+
+  var flowsLength = Number( $("#flows-length").val() );
+  var textbookData = <%= raw main.textbooks_hash.to_json %>
+  var homeworkData = <%= raw main.homeworks_hash.to_json %>
+
+  //関数の定義
+  function addFlow(){
+    $("#flows").append('<br>↓<br><input type="text" name="main[flows_attributes][' + flowsLength + '][content]" id="main_flows_attributes_' + flowsLength + '_content">');
+    $('#main_flows_attributes_' + flowsLength + '_content').focus().keypress(function(event){
+      if (event.keyCode === 13) {
+        event.preventDefault();
+      }
+    });;
+    flowsLength++;
+  }
+
+  function addTextbook(){
+    setCSRFtoken();
+    $.post("/testbooks.json", {testbook: {name: $("#text-name").val(), name_kana: $("#text-name-kana").val()}}, function(data){
+      $("#textbooks").append(`<div class="${data.name_kana} textbook"><input type="checkbox" name="textbook[]" id="textbook_${data.id}" value="${data.id}" onclick="setTextbookAndHomeworkForm()" checked><label for="textbook_${data.id}" id="textbook-name-${data.id}">${data.name}</label></div>`);
+      setTextbookAndHomeworkForm();
+      $("#text-name").val("");
+      $("#text-name-kana").val("");
+      searchTextbook();
+    });
+  }
+
+  function setTextBookData(key, i){
+    const value = $(`#main_main_textbooks_attributes_${i}_finished_place`).val()
+    if(textbookData[key]){
+      textbookData[key]["finished_place"] = value;
+    } else{
+      textbookData[key] = {id: "", finished_place: value};
+    }
+  }
+
+  function setHomeworkData(key, i){
+    const value = $(`#main_homeworks_attributes_${i}_finished_place`).val()
+    if(homeworkData[key]){
+      homeworkData[key]["amount"] = value;
+    } else{
+      homeworkData[key] = {id: "", amount: value};
+    }
+  }
+
+  function setTextbookAndHomeworkForm(){
+    var selectedValues = $('input[name="textbook[]"]:checked').map(function(){
+      return $(this).val();
+    }).get();
+    const fKeys = Object.keys(textbookData);
+    const hKeys = Object.keys(homeworkData);
+    if(selectedValues.length == 0){
+      $("#finished_place").html("使用している教材を選択してください。");
+      $("#homeworks").html("使用している教材を選択してください。");
+    } else{
+      $("#finished_place").html("");
+      $("#homeworks").html("");
+      for(let i=0; i<selectedValues.length; i++){
+        const value = selectedValues[i];
+        const name = $(`#textbook-name-${value}`).text();
+        if(fKeys.includes(value)){
+          const tElem = textbookData[value];
+          $("#finished_place").append(`<label for="main_main_textbooks_attributes_${i}_finished_place">${name}</label>：<input type="text" name="main[main_textbooks_attributes][${i}][finished_place]" id="main_main_textbooks_attributes_${i}_finished_place" oninput="setTextBookData(${value}, ${i})" value="${tElem.finished_place}"><input type="hidden" value="${value}" name="main[main_textbooks_attributes][${i}][textbook_id]" id="main_main_textbooks_attributes_${i}_textbook_id"><input type="hidden" value="${tElem.id}" name="main[main_textbooks_attributes][${i}][id]" id="main_main_textbooks_attributes_${i}_id"><br>`);
+        } else{
+          $("#finished_place").append(`<label for="main_main_textbooks_attributes_${i}_finished_place">${name}</label>：<input type="text" name="main[main_textbooks_attributes][${i}][finished_place]" id="main_main_textbooks_attributes_${i}_finished_place" oninput="setTextBookData(${value}, ${i})"><input type="hidden" value="${value}" name="main[main_textbooks_attributes][${i}][textbook_id]" id="main_main_textbooks_attributes_${i}_textbook_id"><br>`);
+        }
+        if(hKeys.includes(value)){
+          const hElem = homeworkData[value];
+          $("#homeworks").append(`<label for="main_homeworks_attributes_${i}_amount">${name}</label>：<input type="text" name="main[homeworks_attributes][${i}][amount]" id="main_homeworks_attributes_${i}_amount" oninput="setHomeworkData(${value}, ${i})" value="${hElem.amount}">/週<input type="hidden" value="${value}" name="main[homeworks_attributes][${i}][textbook_id]" id="main_homeworks_attributes_${i}_textbook_id"><input type="hidden" value="${hElem.id}" name="main[homeworks_attributes][${i}][id]" id="main_homeworks_attributes_${i}_id"><br>`);
+        } else{
+          $("#homeworks").append(`<label for="main_homeworks_attributes_${i}_amount">${name}</label>：<input type="text" name="main[homeworks_attributes][${i}][amount]" id="main_homeworks_attributes_${i}_amount" oninput="setHomeworkData(${value}, ${i})">/週<input type="hidden" value="${value}" name="main[homeworks_attributes][${i}][textbook_id]" id="main_homeworks_attributes_${i}_textbook_id"><br>`);
+        }
+        $(`#main_main_textbooks_attributes_${i}_finished_place`).keypress(function(event){
+          if (event.keyCode === 13) {
+            event.preventDefault();
+          }
+        });
+        $(`main_homeworks_attributes_${i}_amount`).keypress(function(event){
+          if (event.keyCode === 13) {
+            event.preventDefault();
+          }
+        });
+      }
+    }
+  }
+
+  function searchTextbook(){
+    const name = $("#text-name").val();
+    const name_kana = $("#text-name-kana").val();
+    if(name == "" && name_kana == "") {
+      $(".textbook").each(function() {
+        $(this).css("display","block");
+      });
+    } else{
+      $(".textbook").each(function() {
+        if(name_kana == ""){
+          if( $(this).text().includes(name) ){
+            $(this).css("display","block");
+          } else {
+            $(this).css("display","none");
+          }
+        } else if( $(this).text().includes(name) || $(this).attr("class").split(" ")[0].includes(name_kana) ){
+          $(this).css("display","block");
+        } else{
+          $(this).css("display","none");
+        }
+      });
+    }
+  }
+
+  //関数の実行s
+  $.fn.autoKana('#text-name', '#text-name-kana');
+
+  setTextbookAndHomeworkForm();
+
+  $("input[type=text]").each(function(){
+    if($(this).attr("id")){
+      if( ['#text-name', '#text-name-kana'].includes($(this).attr("id")) ){} else{
+        $(this).keypress(function(event){
+          if (event.keyCode === 13) {
+            event.preventDefault();
+          }
+        });
+      }
+    }
+  });
+  
+  $('#text-name').keypress(function(event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      $("#text-name-kana").focus();
+    }
+  });
+
+  $('#text-name-kana').keypress(function(event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      addTextbook();
+    }
+  });
+
+  var idArray = ["#student_name", "#student_goal", "#student_personality", "#student_supplement"];
+
+  for (let i = 0; i<idArray.length-1; i++){
+    const currentId = idArray[i];
+    const nextId = idArray[i+1];
+    $(currentId).keypress(function(event) {
+      if (event.keyCode === 13) {
+        event.preventDefault();
+        $(nextId).focus();
+      }
+    });
+  }
+
+</script>

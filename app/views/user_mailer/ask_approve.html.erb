@@ -1,0 +1,3 @@
+<%= @new_teacher.name %>先生が承認を要求しました。<br>
+権限を与える場合はこちらの手続きをお願いします。<br>
+<%= link_to "権限付与ページ", teachers_url + "/" + @new_teacher.id.to_s %>
