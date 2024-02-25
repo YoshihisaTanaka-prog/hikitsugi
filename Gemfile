@@ -77,5 +77,5 @@ end
 
 group :production do
   gem "postgres"
-  gem "uvicon"
+  gem "unicon"
 end
