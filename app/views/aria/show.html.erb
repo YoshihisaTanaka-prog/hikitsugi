@@ -8,3 +8,8 @@
 
   <%= button_to "Destroy this arium", @arium, method: :delete, form: {data: {turbo_confirm: "本当に削除してもよろしいですか？"}} %>
 </div>
+<ul>
+  <% Prefecture.where(area_id: @arium.id).each do |p| %>
+    <li><%= p.name %></li>
+  <% end %>
+</ul>
