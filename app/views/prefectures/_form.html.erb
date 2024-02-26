@@ -19,7 +19,7 @@
   <div>
     <% Arium.all.each do |category| %>
       <%= form.radio_button :area_id, category.id %>
-      <%= form.label "category_id_#{category.id}", category.name %><br>
+      <%= form.label "area_id_#{category.id}", category.name %><br>
     <% end %>
   </div>
 
