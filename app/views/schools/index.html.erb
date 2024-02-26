@@ -2,6 +2,8 @@
 
 <h1>Schools</h1>
 
+<%= link_to "New school", new_school_path %>
+
 <div id="schools">
   <% @schools.each do |school| %>
     <%= render school %>
