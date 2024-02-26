@@ -2,6 +2,8 @@
 
 <h1>Prefectures</h1>
 
+<%= link_to "New prefecture", new_prefecture_path %>
+
 <div id="prefectures">
   <% @prefectures.each do |prefecture| %>
     <%= render prefecture %>
