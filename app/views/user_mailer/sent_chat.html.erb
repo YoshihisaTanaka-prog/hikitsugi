@@ -1,0 +1,8 @@
+
+<% if @chat.is_from %>
+  <%= @chat.teacher.name %>先生(<%= @chat.teacher.school.name if @chat.teacher.school %>)
+<% else %>
+  管理人
+<% end %>
+からチャットが来ました。<br>
+返信は<%= link_to "こちら", "#{chats_url}/#{@chat.teacher.id}" %>から

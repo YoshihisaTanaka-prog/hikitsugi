@@ -38,6 +38,7 @@ class ChatsController < ApplicationController
 
     respond_to do |format|
       if @chat.save
+        UserMailer.sent_chat(@chat).deliver_now
         format.html { redirect_to chat_url(@chat.teacher_id), notice: "Chat was successfully created." }
         format.json { render :show, status: :created, location: @chat }
       else

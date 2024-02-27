@@ -3,18 +3,20 @@ class ApplicationController < ActionController::Base
   before_action :confirm_authorization, unless: :devise_controller?
 
   def confirm_authorization
-    # logger.debug params
+    # logger.debug controller_name
     unless ["tops","chats"].include?(controller_name)
-      unless teacher_signed_in?
-        redirect_to root_path
-      else
+      if teacher_signed_in?
         unless current_teacher.is_authenticated
-          unless params[:id].blank?
+          if params[:id].blank?
+            redirect_to root_path
+          else
             unless controller_name == "teachers" && action_name == "show" && params[:id] == current_teacher.id.to_s
               redirect_to root_path
             end
           end
         end
+      else
+        redirect_to root_path
       end
     end
   end

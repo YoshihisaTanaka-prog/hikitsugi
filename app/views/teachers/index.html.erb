@@ -2,9 +2,9 @@
 <ul>
   <% @teachers.each do |teacher| %>
     <% if teacher.school %>
-      <li><%= link_to "#{teacher.name} #{teacher.school.name}", "/teachers/#{teacher.id}" %></li>
+      <li><%= link_to "#{teacher.name} #{teacher.school.name}", "/teachers/#{teacher.id}" %><%= link_to "　チャットする", chat_path(teacher.id) if current_teacher.id == 1 %></li>
     <% else %>
-      <li><%= link_to teacher.name, "/teachers/#{teacher.id}" %></li>
+      <li><%= link_to teacher.name, "/teachers/#{teacher.id}" %><%= link_to "　チャットする", chat_path(teacher.id) if current_teacher.id == 1 %></li>
     <% end %>
   <% end %>
 </ul>

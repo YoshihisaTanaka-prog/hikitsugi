@@ -219,7 +219,12 @@
     <div>
       <% unless controller_name == "chats" %>
         <% if teacher_signed_in? %>
-          <%= link_to '困ったときはこちら', chats_path %>
+          
+          <% if current_teacher.id == 1 %>
+            <%= link_to '教師一覧', teachers_path %>
+          <% else %>
+            <%= link_to '困ったときはこちら', chats_path %>
+          <% end %>
         <% end %>
       <% end %>
     </div>
