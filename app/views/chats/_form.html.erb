@@ -1,0 +1,24 @@
+<%= form_with(model: chat) do |form| %>
+  <% if chat.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(chat.errors.count, "error") %> prohibited this chat from being saved:</h2>
+
+      <ul>
+        <% chat.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <%= form.hidden_field :is_from %>
+  <%= form.hidden_field :teacher_id %>
+
+  <div>
+    <%= form.label :message, "メッセージ", style: "display: block" %>
+    <%= form.text_area :message %>
+  </div>
+
+  <div>
+    <%= form.submit("送信") %>
+  </div>
+<% end %>

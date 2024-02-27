@@ -1,0 +1,17 @@
+<p style="color: green"><%= notice %></p>
+
+<div id="chats" style="word-wrap: break-word; white-space: normal; overflow: auto; max-height: 80vh; scroll-behavior: auto;">
+  <% @chats.each do |chat| %>
+    <%= render chat %>
+  <% end %>
+</div>
+
+
+<% if current_teacher.id == 1 %>
+  <%= link_to "返信", "#{new_chat_path}/#{params[:id]}" %>
+<% else %>
+  <%= link_to "返信", new_chat_path %>
+<% end %>
+<script>
+  document.querySelector('#chats').scrollTop = document.querySelector('#chats').scrollHeight;
+</script>

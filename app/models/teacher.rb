@@ -4,6 +4,9 @@ class Teacher < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+
+  has_many :chats
+
   def area
     p = Prefecture.find_by(id: self.school.prefecture_id) if self.school
     a = Arium.find_by(id: p.area_id) if p

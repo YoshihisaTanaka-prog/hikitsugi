@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
 
   def confirm_authorization
     # logger.debug params
-    unless ["tops"].include?(controller_name)
+    unless ["tops","chats"].include?(controller_name)
       unless teacher_signed_in?
         redirect_to root_path
       else

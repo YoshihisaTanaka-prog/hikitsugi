@@ -216,5 +216,12 @@
       <% end %>
     </div>
     <%= yield %>
+    <div>
+      <% unless controller_name == "chats" %>
+        <% if teacher_signed_in? %>
+          <%= link_to '困ったときはこちら', chats_path %>
+        <% end %>
+      <% end %>
+    </div>
   </body>
 </html>

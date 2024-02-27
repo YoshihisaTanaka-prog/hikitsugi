@@ -22,4 +22,9 @@ class TopsController < ApplicationController
     render json: ret
   end
 
+  def update_grade
+    remote_ip = request.remote_ip
+    logger.info remote_ip
+  end
+
 end

@@ -1,0 +1,33 @@
+<% if chat.is_from %>
+  <% if current_teacher.id == 1 %>
+    <div id="<%= dom_id chat %>" width="100%" style="justify-content: end;">
+      <div style="width: fit-content; max-width: 90%; float: left; clear: both; background: #fff; border: 2px solid #13178E; border-radius: 30px 30px 30px 0px; padding: 2em; margin-bottom: 1em;">
+        <strong><%= chat.teacher.name %></strong>
+        <%= simple_format(chat.message) %>
+      </div>
+    </div>
+  <% else %>
+    <div id="<%= dom_id chat %>" width="100%" style="justify-content: start;">
+      <div style="width: fit-content; max-width: 90%; float: right; clear: both; background: #13178e; color: #fff; border: 2px solid #13178E; border-radius: 30px 30px 0px 30px; padding: 2em; margin-bottom: 1em;">
+        <strong><%= chat.teacher.name %></strong>
+        <%= simple_format(chat.message) %>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <% if current_teacher.id == 1 %>
+    <div id="<%= dom_id chat %>" width="100%" style="justify-content: start;">
+      <div style="width: fit-content; max-width: 90%; float: right; clear: both; background: #13178e; color: #fff; border: 2px solid #13178E; border-radius: 30px 30px 0px 30px; padding: 2em; margin-bottom: 1em;">
+        <strong>管理人</strong>
+        <%= simple_format(chat.message) %>
+      </div>
+    </div>
+  <% else %>
+    <div id="<%= dom_id chat %>" width="100%" style="justify-content: end;">
+      <div style="width: fit-content; max-width: 90%; float: left; clear: both; background: #fff; border: 2px solid #13178E; border-radius: 30px 30px 30px 0px; padding: 2em; margin-bottom: 1em;">
+        <strong>管理人</strong>
+        <%= simple_format(chat.message) %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
