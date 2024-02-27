@@ -14,14 +14,15 @@
       知っている先生がいない場合はこちら<input type="text" id="name" placeholder="教師名">(<input type="text" id="name_kana" placeholder="かな">)先生<button onclick="searchTeacher()">検索</button>
       <button id="approve-btn" onclick="askApprove()">に承認してもらう。</button>
     </div>
+  <% else %>
+    <ul>
+      <li><%= link_to '生徒一覧', students_path %></li>
+      <li><%= link_to '校舎一覧', schools_path %></li>
+      <% if current_teacher.email == ENV['ADMIN_EMAIL'] %>
+        <li><%= link_to '地方の編集', aria_path %></li>
+      <% end %>
+    </ul>
   <% end %>
-  <ul>
-    <li><%= link_to '生徒一覧', students_path %></li>
-    <li><%= link_to '校舎一覧', schools_path %></li>
-    <% if current_teacher.email == ENV['ADMIN_EMAIL'] %>
-      <li><%= link_to '地方の編集', aria_path %></li>
-    <% end %>
-  </ul>
 <% else %>
   <ul>
     <li><%= link_to 'Sign In', new_teacher_session_path %></li>
