@@ -80,4 +80,5 @@ group :production do
   gem 'sass-rails'
   gem 'uglifier'
   gem "unicorn"
+  gem 'webpacker'
 end
