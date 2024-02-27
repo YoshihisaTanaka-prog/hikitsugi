@@ -80,5 +80,5 @@ group :production do
   gem 'sass-rails'
   gem 'uglifier'
   gem "unicorn"
-  gem 'webpacker'
+  gem 'webpacker', '~> 5.x'
 end
