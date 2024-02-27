@@ -25,6 +25,7 @@ class TopsController < ApplicationController
   def update_grade
     remote_ip = request.remote_ip
     logger.info remote_ip
+    render json: {ip: remote_ip}
   end
 
 end
