@@ -77,6 +77,7 @@ end
 
 group :production do
   gem "mysql2"
-  gem "unicorn"
+  gem 'sass-rails'
   gem 'uglifier'
+  gem "unicorn"
 end
