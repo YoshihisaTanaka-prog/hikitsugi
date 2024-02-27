@@ -25,6 +25,12 @@ class TopsController < ApplicationController
   def update_grade
     remote_ip = request.remote_ip
     logger.info remote_ip
+    if remote_ip == ENV["MY_IP"]
+      Student.all.each do |student|
+        student.grade = student.grade + 1 unless student.grade == 13
+        student.save
+      end
+    end
     render json: {ip: remote_ip}
   end
 
