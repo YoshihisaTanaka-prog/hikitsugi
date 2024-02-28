@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  before_action :store_current_location, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :confirm_authorization, unless: :devise_controller?
 
@@ -22,7 +23,11 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    students_path
+    if session[:init_page].blank?
+      students_path
+    else
+      session[:init_page]
+    end
   end
 
   protected
@@ -31,4 +36,13 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :name_kana, :school_id])
     devise_parameter_sanitizer.permit(:account_update, keys: [:name, :name_kana, :school_id])
   end
+
+  private
+
+  def store_current_location
+    unless controller_name == "tops" && action_name == "index"
+      session[:init_page] = request.fullpath
+    end
+  end
+
 end
